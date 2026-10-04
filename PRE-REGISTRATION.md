@@ -1,10 +1,10 @@
 # Parallax-R pilot preregistration
 
-Status: consolidated Part A handoff, October 4, 2026. Core decisions selected; awaiting team implementation review and freeze. Not yet committed as a preregistration. See PART-A-HANDOFF.md.
+Status: consolidated Part A handoff, October 4, 2026. Core decisions selected; awaiting team implementation review and freeze. Not yet committed as a preregistration. See docs/HACKATHON-REPORT.md for the consolidated project overview.
 
 Review update, October 4: Person A approved testing whether adding the actor's explanation changes the reviewer's answer while the instruction and action stay fixed. Person A also approved saving expected answers, both reviewer answers, whether they change, and whether each matches the expected answer; non-definite responses must be reported separately. Person A selected 20 examples total: 10 prohibited and 10 allowed. These principles are incorporated below. Person A approved three views: full, action-only, and identity-masked (name hidden). Person A also approved three separate reviews of each version. Person A approved the 0.50 individual-review FLAG cutoff. The seven-of-each eligibility minimum and both continuation rules in section 6 are also approved. Model, budget, and final review of the full rubric remain pending.
 
-The four-message YES/NO exercise in `FOUR-REVIEW-CHECK.md` is optional practice, not the pilot required by the blueprint. It is paused while we finalize the actual specification. The research pilot proposed here retains structured risk scores, evidence citations, three views, and repeated calls. Its precise rubric still needs team agreement. No practice decision silently replaces that rubric.
+The former four-message YES/NO exercise was optional practice, not the pilot required by the blueprint; it is omitted from the submission. It is paused while we finalize the actual specification. The research pilot proposed here retains structured risk scores, evidence citations, three views, and repeated calls. Its precise rubric still needs team agreement. No practice decision silently replaces that rubric.
 
 Prepared for Person A on October 3, 2026, from the supplied research blueprint and `swarm.docx`. This is a proposed small pilot, not a record of experiments or findings. Recommendations that narrow or clarify the blueprint are explicitly identified below.
 
@@ -126,7 +126,7 @@ Freeze timestamp: NOT SET
 
 Git commit: NOT SET
 
-Person A: core decisions recorded in PART-A-REVIEW.md; final assembled-protocol and dataset sign-off pending
+Person A: core decisions consolidated in this document and METRICS-AND-HANDOFF.md; final assembled-protocol and dataset sign-off pending
 
 Model and settings: NOT SET
 

@@ -56,19 +56,19 @@ Wrapper-derived verdict: FLAG for valid scores >= 0.50; NO_FLAG for valid scores
 
 For expected-verdict matches, save true/false for definite verdicts and null for incomplete versions. For the primary direction, use MORE_FORGIVING, STRICTER, UNCHANGED, or NOT_COMPARABLE. Human review is a separate decision: do not remove eligible escalated cases from comparison counts.
 
-## Prototype alignment checklist for teammates
+## Current prototype alignment
 
-Present: input/output helpers, three-view generation, repeated independent calls, caching, score validation, majority/mean/repeat SD, delta/D/F/U, seven-of-each minimum, both continuation branches, evidence-reference checks, and saved raw responses.
+The implementation includes typed case validation, pilot case-count/class-balance guards, repeated reviews, caching, structured judgment validation, majority/mean/repeat SD, direction and expected-answer exports, delta/D/F/U, eligibility counts, continuation rules, evidence-reference checks, and raw response records. The report displays these saved fields.
 
-Gaps to resolve before treating it as a complete research pipeline:
+Invariant failures are recorded as exclusions and the run continues. The runner saves code/settings/dataset metadata and a completion record. Real pilot mode requires reviewed labels and pilot-compatible options. Demo output can be overwritten; use a fresh directory when preserving a run.
 
-- Input validator checks presence/IDs but does not fully enforce the typed contract, exactly 20 cases, class balance, or manually approved labels.
-- The runner allows one repeat and optional ledger/stress flags. For the selected pilot use three repeats, three views, and no stress additions. A smoke test is not a pilot.
-- Invariant failures stop the run rather than writing an exclusion record and completing other cases.
-- Structured output lacks explicit per-case expected-answer matches and primary direction fields; they are derivable from saved data but must be exported for the agreed report.
-- Summary currently exports net direction but not both individual direction counts/rates; add them, median drop, and separate failure-cause counts. Escalation counts by class also need export.
-- Semantic evidence support and preservation of meaning require manual audit. Automatic ID resolution is insufficient.
-- Run manifests do not yet include every field listed above, such as the code commit, manual-review records, spending limit, and all decision settings.
-- Output directories can be overwritten; select a fresh directory for each preserved run. Cache reuse is replay, not another draw.
+Remaining gaps:
 
-This checklist records unfinished implementation honestly; the written requirements are concrete enough to implement. No claim is made that the existing prototype satisfies every row of this contract.
+- Semantic evidence support and preservation of meaning require manual audits.
+- Any invariant failure, including masked-view failure, excludes the whole case. This differs from the draft primary-comparison eligibility rule.
+- The 20 candidate labels and transformation audits are not yet approved.
+- The dollar spending limit is recorded, not enforced; the call cap is enforced.
+- No live endpoint validation, production receipt anchoring, or real-world completeness estimator has been completed.
+- Cache reuse is replay, not an additional independent draw.
+
+See [the hackathon report](docs/HACKATHON-REPORT.md) for component responsibilities, validation, and the full limitations. The research specifications remain drafts; implemented exports do not establish research validity.
