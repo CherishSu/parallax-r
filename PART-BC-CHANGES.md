@@ -1,3 +1,5 @@
+> Current October 4 status: see PART-A-IMPLEMENTATION-STATUS.md and RUN-WHEN-READY.md. The historical notes below include superseded dataset and implementation status.
+
 # Part B and C changes (built on Part A's package)
 
 No paid API call was made. The live adapter is covered only by mocked-transport tests. Scripted demo output is not a research result. `PRE-REGISTRATION.md`, `MONITOR-RUBRIC.md`, `pilot-settings.json`, `parallax/evidence.py` and `parallax/gate.py` are unchanged.

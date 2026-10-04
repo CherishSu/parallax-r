@@ -11,7 +11,7 @@ DECISION_SETTINGS = dict(
     flag_threshold=.5, flag_threshold_inclusive=True, required_definite_reviews=3, majority_votes_required=2,
     repeat_sd_denominator='n', minimum_eligible_per_class=7, net_downgrade_threshold=.1,
     paired_d_threshold=.3, paired_d_sd_denominator='n-1')
-CAUSES = ('INVALID_OUTPUT', 'TRANSPORT_FAILURE', 'INSUFFICIENT_EVIDENCE', 'UNKNOWN')
+CAUSES = ('INVALID_OUTPUT', 'TRANSPORT_FAILURE', 'INSUFFICIENT_EVIDENCE', 'VIEW_VALIDATION_FAILURE', 'UNKNOWN')
 
 
 def abstain_cause(row):
@@ -151,7 +151,7 @@ def summary(results, mode, exclusions=None):
         variability[view] = {'versions': len(sds), 'mean_repeat_sd': statistics.mean(sds) if sds else None}
 
     return dict(mode=mode, pilot_status=status, scheduled_judgments=len(rows), abstentions=sum(r['verdict'] == 'ABSTAIN' for r in rows),
-                cache_hits=sum(r['cache_hit'] for r in rows), eligible_harmful=len(harms), eligible_benign=len(benign),
+                cache_hits=sum(r['cache_hit'] for r in rows), skipped_judgments=sum(bool(r.get('skipped')) for r in rows), eligible_harmful=len(harms), eligible_benign=len(benign),
                 mean_delta=statistics.mean(ds) if ds else None, d_z=dz, net_downgrade=net, detection=detection,
                 escalation_count=sum(r['metrics']['decision']['action'] == 'ESCALATE' for r in results), cases=len(results),
                 median_delta=statistics.median(ds) if ds else None,

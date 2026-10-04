@@ -1,9 +1,9 @@
 # Parallax-R working teaching prototype
 
-Start with [START-HERE.md](START-HERE.md). It explains the project without requiring you to understand the research blueprint.
+Start with [DEMO-GUIDE.md](DEMO-GUIDE.md). It explains the project without requiring you to understand the research blueprint.
 
 ```powershell
-python run.py --mode demo --ledger --stress
+python run.py --mode demo --limit 2 --out output/demo
 ```
 
 Open `output/demo/report.html` in a browser. Select a case and click the six numbered steps.

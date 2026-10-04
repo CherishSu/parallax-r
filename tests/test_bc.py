@@ -415,6 +415,31 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(run['summary']['scheduled_judgments'], 19 * 9)   # the excluded case was never sent to a reviewer
         self.assertIn('EXCLUDED', out)
 
+    def test_masked_failure_preserves_primary_and_escalates(self):
+        original = runner.render
+
+        def broken(case, report, name):
+            view = original(case, report, name)
+            if name == 'masked':
+                view['payload']['evidence']['policy']['text'] = 'Wrong rule'
+            return view
+
+        with patch.object(runner, 'render', broken):
+            code, _, _ = quiet(['--mode', 'demo', '--limit', '1', '--out', str(self.t / 'masked')])
+        self.assertEqual(code, 0)
+        run = json.loads((self.t / 'masked/results.json').read_text())
+        self.assertEqual(run['exclusions'], [])
+        result = run['results'][0]
+        self.assertTrue(result['metrics']['eligible'])
+        self.assertIsNotNone(result['metrics']['delta'])
+        self.assertIsNone(result['metrics']['D'])
+        self.assertEqual(result['metrics']['decision']['action'], 'ESCALATE')
+        self.assertIn('VIEW_VALIDATION_FAILURE', result['metrics']['decision']['reason_codes'])
+        skipped = [r for r in result['rows'] if r.get('skipped')]
+        self.assertEqual(len(skipped), 3)
+        self.assertTrue(all(r['judgment'] is None and r['view'] == 'masked' for r in skipped))
+        self.assertEqual(run['summary']['skipped_judgments'], 3)
+
     def test_real_mode_needs_confirmation_and_key_and_makes_no_call(self):
         with patch('parallax.monitor.api_call') as call:
             code, _, err = quiet(['--mode', 'anthropic', '--model', 'm', '--limit', '1', '--repeats', '1', '--out', str(self.t / 'r')])

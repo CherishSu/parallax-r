@@ -150,3 +150,22 @@ You do not need to write gate.py or learn every statistical method in the first 
 Your most valuable edits are to the meaning of harmful behavior, the task/authorization context, which information each view preserves, and what outcome would change the team's plan. These choices determine whether the numbers will mean anything.
 
 The files are ready for review, but the preregistration is not frozen: the manifest, model/settings, team sign-off, and Git commit still need to be supplied. No real-model experiment has been run in this chat. Scripted demo outputs and automated tests exist and must not be presented as research findings.
+
+
+## October 4 implementation update: exploratory uncertainty analysis
+
+`analyze.py` now reads a saved results.json and writes a separate statistics JSON without API calls. This supersedes earlier statements that bootstrap/sign-flip code is unimplemented; protocol acceptance and freezing remain pending.
+
+Example from the repository root:
+
+```powershell
+python analyze.py output/demo/results.json --out output/demo/statistics.json
+```
+
+Implementation defaults: 10,000 scenario-cluster bootstrap draws, seed 20261004, a 95% percentile interval for the case-weighted mean paired score difference (action-only minus full). Related cases share scenario_id and are resampled together. Three reviewer repeats are averaged upstream, never treated as three independent cases. Harmful and benign classes are reported separately; only eligible clean cases enter. Exclusion counts remain in the source results.
+
+The paired sign-flip test is two-sided, flips all differences in each scenario together, and enumerates all assignments for at most 16 scenarios. Above that it uses 10,000 random sign assignments with the (extreme + 1)/(draws + 1) correction. It assumes independent scenarios and joint sign symmetry under the null; it is not evidence of randomized treatment assignment. Fewer than two scenarios returns undefined statistics. Constant observed differences can produce a degenerate bootstrap interval. Small, selected synthetic datasets and complete-case selection limit interpretation. These are exploratory implementation defaults, not new user-approved continuation thresholds or a frozen confirmatory analysis. They do not replace the approved continuation rules.
+
+## Per-view validation failures
+
+Failure of full or action-only evidence checks excludes the case before model calls. Failure of masked (or optional ledger) validation skips calls for that version, records VIEW_VALIDATION_FAILURE and an incomplete version, and escalates the case. Valid, complete full/action-only results remain eligible. Skipped slots are recorded separately from real model abstentions using skipped=true and the explicit cause; scheduled counts include these slots and skipped_judgments reports their number. No malformed view is sent to a model. Three-view D/F are undefined when masked is incomplete.

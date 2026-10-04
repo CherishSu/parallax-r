@@ -4,6 +4,7 @@ import csv
 import datetime
 import hashlib
 import json
+import math
 import os
 import subprocess
 import sys
@@ -88,6 +89,8 @@ def main(argv=None):
     p = build_parser()
     args = p.parse_args(argv)
     real = args.mode == 'anthropic'
+    if args.max_spend_usd is not None and (not math.isfinite(args.max_spend_usd) or args.max_spend_usd <= 0):
+        p.error('--max-spend-usd must be a finite positive amount')
     if args.limit < 1:
         p.error('--limit must be positive')
     if real and not args.model:
@@ -132,6 +135,10 @@ def main(argv=None):
         problems = dataset_manifest_problems(dataset_manifest, cases)
         if problems and args.pilot and real:
             p.error('Dataset manifest is not ready for a real pilot:\n  ' + '\n  '.join(problems[:12]))
+    if args.pilot and real:
+        configured = json.loads(args.settings.read_text(encoding='utf-8-sig'))
+        if configured.get('model_id') != args.model or configured.get('max_output_tokens') != MODEL_SETTINGS['max_tokens']:
+            p.error('Pilot model or output-token limit differs from the recorded settings')
     names = PILOT_VIEWS + (['ledger'] if args.ledger else [])
     scheduled = len(cases) * len(names) * args.repeats
     if args.max_calls is not None and scheduled > args.max_calls:
@@ -162,7 +169,7 @@ def main(argv=None):
         report = reconcile(case)
         views = [render(case, report, n) for n in names]
         try:
-            check_invariants(case, report, views)
+            check_invariants(case, report, [v for v in views if v['name'] in ('full', 'action_only')])
         except ValueError as exc:
             # Preserve the evidence of what happened and keep going; excluded cases are never sent to the reviewer.
             exclusions.append(dict(case_id=case['case_id'], scenario_id=case['scenario_id'], ground_truth=case['ground_truth'],
@@ -172,9 +179,31 @@ def main(argv=None):
         found = masking_residue(case)
         if found:
             residues[case['case_id']] = found
-        rows = [judge(v, case['case_id'], repeat, args.mode, model, cache_dir, args.replay)
-                for v in views for repeat in range(1, args.repeats+1)]
+        view_failures = {}
+        for v in views:
+            if v['name'] in ('full', 'action_only'):
+                continue
+            try:
+                check_invariants(case, report, [v])
+            except ValueError as exc:
+                view_failures[v['name']] = str(exc)
+        rows = []
+        for v in views:
+            for repeat in range(1, args.repeats + 1):
+                if v['name'] in view_failures:
+                    rows.append(dict(view=v['name'], repeat=repeat, judgment=None, verdict='ABSTAIN',
+                                     cache_hit=False, error='view_validation_failure',
+                                     abstain_cause='VIEW_VALIDATION_FAILURE',
+                                     skipped=True, reason=view_failures[v['name']]))
+                else:
+                    rows.append(judge(v, case['case_id'], repeat, args.mode, model, cache_dir, args.replay))
         metrics = evaluate_case(case, report, views, rows, args.repeats)
+        metrics['view_validation_failures'] = view_failures
+        if view_failures:
+            metrics['decision']['action'] = 'ESCALATE'
+            metrics['decision']['accepted_verdict'] = None
+            metrics['decision']['reason_codes'].append('VIEW_VALIDATION_FAILURE')
+            metrics['decision']['details']['view_validation_failures'] = view_failures
         results.append(dict(case=case, reconciliation=report, views=views, rows=rows, metrics=metrics))
         print(f"  {case['case_id']}: {metrics['decision']['action']} {' '.join(metrics['decision']['reason_codes'])}", flush=True)
     run = dict(mode=args.mode, manifest=manifest, summary=summary(results, args.mode, exclusions), results=results,

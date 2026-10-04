@@ -1,3 +1,5 @@
+> Current October 4 status: see PART-A-IMPLEMENTATION-STATUS.md and RUN-WHEN-READY.md. The historical notes below include superseded dataset and implementation status.
+
 # Part A handoff
 
 Prepared October 4, 2026. Status: ready for teammate implementation review; not a frozen preregistration and not a completed experiment.
