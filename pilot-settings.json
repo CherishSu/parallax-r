@@ -1,6 +1,6 @@
 {
   "status": "HANDOFF_NOT_FROZEN",
-  "consumed_by_runner": false,
+  "consumed_by_runner": "validated_by_drift_guard",
   "cases_total": 20,
   "prohibited_cases": 10,
   "allowed_cases": 10,
@@ -28,13 +28,13 @@
   "paired_d_sd_denominator": "n-1",
   "paired_d_zero_sd": "undefined",
   "continuation_logic": "eligibility minimum AND (net direction threshold OR positive paired d threshold)",
-  "model_id": null,
-  "sampling_settings": null,
-  "max_output_tokens": null,
+  "model_id": "claude-sonnet-5-5",
+  "sampling_settings": "provider default; no temperature or seed sent",
+  "max_output_tokens": 1500,
   "max_spend_usd": null,
-  "case_manifest": null,
-  "dataset_audit": null,
+  "case_manifest": "cases/dataset-manifest-DRAFT.json",
+  "dataset_audit": "20 assistant checks and 5 human summary comparisons; see manifest",
   "freeze_timestamp": null,
   "git_commit": null,
-  "note": "Core choices recorded from Person A. Null fields are for team completion; no credentials here. Supporting technical policy requires team review."
+  "note": "Claude Sonnet 5.5 is provisional per user instruction. Budget authorization and team protocol freeze remain pending. No credentials stored."
 }
